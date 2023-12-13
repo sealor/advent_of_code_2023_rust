@@ -57,7 +57,7 @@ mod tests {
 
         let mut sum = 0;
         for line in content.lines() {
-            let mut iter = RollingRegexIter::new(pattern.clone(), line);
+            let mut iter = RollingRegexIter::new(&pattern, line);
 
             let lower = iter.next().expect("No number found");
             let higher = iter.last().unwrap_or(lower);
@@ -76,14 +76,14 @@ mod tests {
             .unwrap_or_else(|_e| *get_number_map().get(number).unwrap())
     }
 
-    struct RollingRegexIter {
-        regex: Regex,
+    struct RollingRegexIter<'a> {
+        regex: &'a Regex,
         text: String,
         start: usize,
     }
 
-    impl RollingRegexIter {
-        fn new(regex: Regex, text: &str) -> Self {
+    impl<'b> RollingRegexIter<'b> {
+        fn new(regex: &'b Regex, text: &str) -> Self {
             RollingRegexIter {
                 regex,
                 text: text.to_string(),
@@ -92,7 +92,7 @@ mod tests {
         }
     }
 
-    impl Iterator for RollingRegexIter {
+    impl<'c> Iterator for RollingRegexIter<'c> {
         type Item = u32;
 
         fn next(&mut self) -> Option<Self::Item> {
