@@ -64,19 +64,17 @@ mod tests {
             winning_counts.push(winning_count);
         }
 
-        fn count_cards(winning_counts: &Vec<usize>, row: usize, sum: &mut usize) {
-            *sum += 1;
-            let count = *winning_counts.get(row).expect("Winning count missing");
-            let count = min(count, winning_counts.len());
-            for i in 1..=count {
-                count_cards(winning_counts, row + i, sum);
+        let mut card_counts: Vec<usize> = vec![1_usize; winning_counts.len()];
+
+        for (i, winning_count) in winning_counts.iter().enumerate() {
+            let start = i + 1;
+            let end = min(card_counts.len(), winning_count + i + 1);
+            for j in start..end {
+                card_counts[j] += card_counts[i];
             }
         }
 
-        let mut sum = 0;
-        for i in 0..winning_counts.len() {
-            count_cards(&winning_counts, i, &mut sum);
-        }
+        let sum: usize = card_counts.iter().sum::<usize>();
 
         assert_eq!(sum, 5833065);
     }
